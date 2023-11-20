@@ -4,7 +4,7 @@ const { TOKEN_SECRET } = process.env;
 
 exports.isAuth = async (req, res, next) => {
     try {
-        let { authorization } = req.headers;
+        let  authorization  = req.header('authorization');
 
         authorization = authorization.split("Bearer ").join('');
 

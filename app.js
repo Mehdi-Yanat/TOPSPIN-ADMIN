@@ -9,9 +9,12 @@ app.use(express.static("public"));
 app.use(cors());
 
 const authRouter = require("./src/routers/auth.router");
+const scheduleRouter = require("./src/routers/matchSchedule.router.js");
+
 const { prisma } = require("./prisma/prisma.js");
 
 app.use("/auth", authRouter);
+app.use('/schedule', scheduleRouter)
 
 const bcrypt = require("bcrypt");
 
@@ -38,7 +41,7 @@ const createAdmin = async () => {
           firstName: "admin",
           email: process.env.EMAIL_ADMIN,
           password: hashedPassword,
-          roles: "admin",
+          roles: ["admin"],
         },
       ],
     });

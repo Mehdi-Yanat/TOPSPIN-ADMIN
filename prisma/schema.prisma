@@ -32,3 +32,50 @@ model verification_codes {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 }
+
+// KLASMAN PUANLARI
+model classificationPoints {
+    id                        Int                         @id @default(autoincrement())
+    identifierName            String
+    classificationPointsTable classificationPointsTable[]
+}
+
+model classificationPointsTable {
+    id                     Int                   @id @default(autoincrement())
+    gender                 String
+    fullname               String
+    category               String
+    point                  Int
+    classificationPoints   classificationPoints? @relation(fields: [classificationPointsId], references: [id])
+    classificationPointsId Int?
+}
+
+// MAÇ PROGRAMI
+model matchSchedule {
+    id               Int                @id @default(autoincrement())
+    date             DateTime
+    day              String
+    hour             String
+    team1            String
+    team2            String
+    team1MatchResult team1MatchResult[]
+    team2MatchResult team2MatchResult[]
+}
+
+model team1MatchResult {
+    id              Int            @id @default(autoincrement())
+    team            String
+    result          Int
+    matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
+    matchScheduleId Int?
+}
+
+model team2MatchResult {
+    id              Int            @id @default(autoincrement())
+    team            String
+    result          Int
+    matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
+    matchScheduleId Int?
+}
+
+// SONUÇLARI

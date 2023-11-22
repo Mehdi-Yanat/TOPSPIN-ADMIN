@@ -12,7 +12,10 @@ const validate = validations => {
             return next();
         }
 
-        res.status(400).json({ errors: errors.array() });
+        const errorsMessage = errors.array().map(el => el.msg)
+
+        
+        res.status(500).json({ message: errorsMessage });
     };
 };
 
@@ -31,4 +34,4 @@ const validateScheduleParams = validate([
 
 
 
-module.exports = { validateSchedule , validateScheduleParams }
+module.exports = { validateSchedule, validateScheduleParams }

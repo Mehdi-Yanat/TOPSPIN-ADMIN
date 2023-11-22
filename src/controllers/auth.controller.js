@@ -14,7 +14,7 @@ exports.login = async (req, res) => {
     try {
         const { email, password, verificationCode } = req.body;
 
-        if ((!email || !password, !verificationCode)) {
+        if ((!email || !password || !verificationCode)) {
             throw new Error("Please check the information entered!");
         }
 

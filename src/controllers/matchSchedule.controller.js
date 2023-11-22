@@ -3,7 +3,6 @@ const { prisma } = require("../../prisma/prisma");
 
 exports.addMatchSchedule = async (req, res) => {
 
-
     try {
         let { date } = req.body
 
@@ -19,7 +18,7 @@ exports.addMatchSchedule = async (req, res) => {
         })
 
         return res.status(201).json({
-            success: false,
+            success: true,
             message: 'Schedule created successfully!'
         })
 
@@ -63,7 +62,7 @@ exports.editMatchSchedule = async (req, res) => {
         })
 
         return res.status(201).json({
-            success: false,
+            success: true,
             message: 'Schedule updated successfully!'
         })
 
@@ -101,8 +100,28 @@ exports.deleteMatchSchedule = async (req, res) => {
         })
 
         return res.status(201).json({
-            success: false,
+            success: true,
             message: 'Schedule deleted successfully!'
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.getAllMatchSchedule = async (req, res) => {
+    try {
+
+        const matches = await prisma.matchSchedule.findMany()
+
+        return res.status(201).json({
+            success: true,
+            message: '',
+            matches
         })
 
     } catch (error) {

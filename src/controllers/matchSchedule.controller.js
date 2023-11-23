@@ -83,7 +83,7 @@ exports.editMatchSchedule = async (req, res) => {
                         where: {
                             id: team1MatchResultId
                         }, data: {
-                            result: parseInt(team1Result)
+                            result: parseInt(team1Result) || 0
                         }
                     }
                 },
@@ -92,7 +92,7 @@ exports.editMatchSchedule = async (req, res) => {
                         where: {
                             id: team2MatchResultId
                         }, data: {
-                            result: parseInt(team2Result)
+                            result: parseInt(team2Result) || 0
                         }
                     }
                 },

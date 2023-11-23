@@ -13,6 +13,6 @@ router.put('/:id' , validate.validateSchedule , validate.validateScheduleParams 
 
 router.delete('/:id' , validate.validateScheduleParams , isAuth , matchScheduleController.deleteMatchSchedule)
 
-router.get('/' , isAuth , matchScheduleController.getAllMatchSchedule)
+router.get('/'  , matchScheduleController.getAllMatchSchedule)
 
 module.exports = router;

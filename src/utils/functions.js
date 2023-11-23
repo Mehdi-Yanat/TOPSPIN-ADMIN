@@ -14,8 +14,8 @@ const validate = validations => {
 
         const errorsMessage = errors.array().map(el => el.msg)
 
-        
-        res.status(500).json({ message: errorsMessage });
+
+        res.status(500).json({ success: false, message: errorsMessage });
     };
 };
 

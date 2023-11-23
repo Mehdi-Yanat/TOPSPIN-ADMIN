@@ -4,15 +4,31 @@ const { prisma } = require("../../prisma/prisma");
 exports.addMatchSchedule = async (req, res) => {
 
     try {
-        let { date } = req.body
+        let { date, team1, team2 } = req.body
 
         const formatDate = moment(date).toISOString();
 
         delete req.body.date
+        delete req.body.team1MatchResultId
+        delete req.body.team2MatchResultId
+        delete req.body.team1Result
+        delete req.body.team2Result
 
         await prisma.matchSchedule.create({
             data: {
                 date: formatDate,
+                team1MatchResult: {
+                    create: {
+                        result: 0,
+                        team: team1
+                    }
+                },
+                team2MatchResult: {
+                    create: {
+                        result: 0,
+                        team: team2
+                    }
+                },
                 ...req.body
             }
         })
@@ -34,7 +50,7 @@ exports.addMatchSchedule = async (req, res) => {
 exports.editMatchSchedule = async (req, res) => {
     try {
 
-        let { date } = req.body
+        let { date, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
         const { id } = req.params
 
         const formatDate = moment(date).toISOString();
@@ -47,6 +63,11 @@ exports.editMatchSchedule = async (req, res) => {
             }
         })
 
+        delete req.body.team1MatchResultId
+        delete req.body.team2MatchResultId
+        delete req.body.team1Result
+        delete req.body.team2Result
+
         if (!isScheduleFound) {
             throw new Error('Schedule not found!')
         }
@@ -57,6 +78,24 @@ exports.editMatchSchedule = async (req, res) => {
             },
             data: {
                 date: formatDate,
+                team1MatchResult: {
+                    update: {
+                        where: {
+                            id: team1MatchResultId
+                        }, data: {
+                            result: parseInt(team1Result)
+                        }
+                    }
+                },
+                team2MatchResult: {
+                    update: {
+                        where: {
+                            id: team2MatchResultId
+                        }, data: {
+                            result: parseInt(team2Result)
+                        }
+                    }
+                },
                 ...req.body
             }
         })
@@ -75,7 +114,6 @@ exports.editMatchSchedule = async (req, res) => {
         });
     }
 }
-
 
 exports.deleteMatchSchedule = async (req, res) => {
     try {
@@ -116,7 +154,18 @@ exports.deleteMatchSchedule = async (req, res) => {
 exports.getAllMatchSchedule = async (req, res) => {
     try {
 
-        const matches = await prisma.matchSchedule.findMany()
+        const matches = await prisma.matchSchedule.findMany({
+            select: {
+                id: true,
+                date: true,
+                day: true,
+                hour: true,
+                team1: true,
+                team2: true,
+                team1MatchResult: true,
+                team2MatchResult: true
+            }
+        })
 
         return res.status(201).json({
             success: true,

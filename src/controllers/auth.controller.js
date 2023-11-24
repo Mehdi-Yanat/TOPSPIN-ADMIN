@@ -202,3 +202,146 @@ exports.logout = async (req, res) => {
         });
     }
 };
+
+exports.update = async (req, res) => {
+    try {
+
+        const { password, email, mobile, firstName, lastName } = req.body;
+
+        const admin = await prisma.users.findUnique({
+            where: {
+                id: req.user.id
+            }
+        })
+
+
+
+        await prisma.users.update({
+            where: {
+                id: admin?.id,
+            }, data: {
+                password: password === admin?.password ? admin?.password : await bcrypt.hash(password, 10),
+                email,
+                mobile,
+                firstName,
+                lastName
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin was updated successfully!",
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+exports.addAdmin = async (req, res) => {
+    try {
+
+        const { email, password } = req.body
+
+        const emailExist = await prisma.users.findFirst({
+            where: {
+                email
+            }
+        })
+
+        if (emailExist) {
+            throw new Error('Email already exists!')
+        }
+
+        const hash = await bcrypt.hash(password, 10)
+
+        await prisma.users.create({
+            data: {
+                email,
+                password: hash,
+                roles: ['admin']
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin was added successfully!",
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+exports.adminLists = async (req, res) => {
+    try {
+
+        const lists = await prisma.users.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                lastLogin: true,
+                createdAt: true
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "",
+            lists
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+exports.deleteAdmin = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        if (!id) {
+            throw new Error("You must provide id")
+        }
+
+        const adminNotFound = await prisma.users.findUnique({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        if (!adminNotFound) {
+            throw new Error("Admin not found to delete")
+        }
+
+        await prisma.users.delete({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin was deleted successfully!",
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

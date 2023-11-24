@@ -20,6 +20,19 @@ const validate = validations => {
 };
 
 
+const validateAddAdmin = validate([
+    body('email').isEmail(),
+    body('password').isLength({ min: 4 }),
+])
+
+const validateEditAdmin = validate([
+    body('email').isEmail(),
+    body('password').isLength({ min: 4 }),
+    body('mobile'),
+    body('firstName').isLength({ min: 4 }),
+    body('lastName').isLength({ min: 4 }),
+])
+
 const validateSchedule = validate([
     body('date').isDate(),
     body('day').isLength({ min: 4 }),
@@ -34,4 +47,4 @@ const validateScheduleParams = validate([
 
 
 
-module.exports = { validateSchedule, validateScheduleParams }
+module.exports = { validateSchedule, validateScheduleParams, validateAddAdmin, validateEditAdmin }

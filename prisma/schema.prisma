@@ -17,6 +17,7 @@ model users {
     email     String    @unique
     password  String
     username  String?   @unique
+    mobile    String?
     roles     String[]
     tokens    String[]
     lastLogin DateTime?

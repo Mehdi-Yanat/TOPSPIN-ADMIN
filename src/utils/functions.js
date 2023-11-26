@@ -41,10 +41,20 @@ const validateSchedule = validate([
     body('team2').isLength({ min: 1 })
 ])
 
+const validateAddPlayOffTable = validate([
+    body('identifierName').isLength({ min: 1 }),
+    body('playoffNumber').isInt(),
+])
+
+const validateAddPlayOffRow = validate([
+    body('team').isLength({ min: 1 }),
+    body('result').isFloat(),
+])
+
 const validateScheduleParams = validate([
     param('id').isInt().toInt(),
 ])
 
 
 
-module.exports = { validateSchedule, validateScheduleParams, validateAddAdmin, validateEditAdmin }
+module.exports = { validateSchedule, validateScheduleParams, validateAddAdmin, validateEditAdmin, validateAddPlayOffTable , validateAddPlayOffRow }

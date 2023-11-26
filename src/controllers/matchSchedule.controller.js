@@ -181,3 +181,173 @@ exports.getAllMatchSchedule = async (req, res) => {
         });
     }
 }
+
+exports.getAllPlayOff = async (req, res) => {
+    try {
+
+        const playoff = await prisma.playoff.findMany({
+            select: {
+                id: true,
+                identifierName: true,
+                playoffNumber: true,
+                playoffTable: {
+                    select: {
+                        id: true,
+                        team: true,
+                        result: true
+                    }
+                }
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: '',
+            playoff
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.addPlayOffTable = async (req, res) => {
+    try {
+
+        const { identifierName, playoffNumber } = req.body
+
+        await prisma.playoff.create({
+            data: {
+                identifierName,
+                playoffNumber: parseInt(playoffNumber),
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Playoff table was created successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.addPlayOffTableRow = async (req, res) => {
+    try {
+
+        const { id } = req.params
+        const { team, result } = req.body
+
+        await prisma.playoffTable.create({
+            data: {
+                team,
+                result: parseFloat(result),
+                playoff: {
+                    connect: {
+                        id: parseInt(id)
+                    }
+                }
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Playoff table row was created successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.editPlayOffTableRow = async (req, res) => {
+    try {
+
+        const { rowId } = req.params
+        const { team, result } = req.body
+
+        await prisma.playoffTable.update({
+            where: {
+                id: parseInt(rowId)
+            }, data: {
+                team,
+                result: parseFloat(result)
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Playoff table row was updated successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.deletePlayOffTable = async (req, res) => {
+    try {
+
+        const { id } = req.params
+
+        await prisma.playoff.delete({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Playoff table was deleted successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.deletePlayOffTableRow = async (req, res) => {
+    try {
+
+        const { rowId } = req.params
+
+        await prisma.playoffTable.delete({
+            where: {
+                id: parseInt(rowId)
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Playoff table row was deleted successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}

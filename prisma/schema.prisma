@@ -79,4 +79,21 @@ model team2MatchResult {
     matchScheduleId Int?
 }
 
+// A PLAY OFF
+
+model playoff {
+    id             Int            @id @default(autoincrement())
+    identifierName String
+    playoffNumber  Int
+    playoffTable   playoffTable[]
+}
+
+model playoffTable {
+    id        Int      @id @default(autoincrement())
+    team      String
+    result    Float
+    playoff   playoff? @relation(fields: [playoffId], references: [id])
+    playoffId Int?
+}
+
 // SONUÇLARI

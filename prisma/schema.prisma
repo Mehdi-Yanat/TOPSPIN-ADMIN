@@ -17,7 +17,6 @@ model users {
     email     String    @unique
     password  String
     username  String?   @unique
-    mobile    String?
     roles     String[]
     tokens    String[]
     lastLogin DateTime?
@@ -34,11 +33,40 @@ model verification_codes {
     updatedAt  DateTime @updatedAt
 }
 
+// League 
+model leagues {
+    id                   Int                    @id @default(autoincrement())
+    leagueName           String
+    matchSchedule        matchSchedule[]
+    classificationPoints classificationPoints[]
+    playersGroup         playersGroup[]
+}
+
+// Takim listeleri
+
+model playersGroup {
+    id              Int       @id @default(autoincrement())
+    identifierGroup String
+    players         players[]
+    leagues         leagues?  @relation(fields: [leaguesId], references: [id])
+    leaguesId       Int?
+}
+
+model players {
+    id             Int           @id @default(autoincrement())
+    playerName     String
+    categories     String
+    playersGroup   playersGroup? @relation(fields: [playersGroupId], references: [id])
+    playersGroupId Int?
+}
+
 // KLASMAN PUANLARI
 model classificationPoints {
     id                        Int                         @id @default(autoincrement())
     identifierName            String
     classificationPointsTable classificationPointsTable[]
+    leagues                   leagues?                    @relation(fields: [leaguesId], references: [id])
+    leaguesId                 Int?
 }
 
 model classificationPointsTable {
@@ -61,6 +89,8 @@ model matchSchedule {
     team2            String
     team1MatchResult team1MatchResult[]
     team2MatchResult team2MatchResult[]
+    leagues          leagues?           @relation(fields: [leaguesId], references: [id])
+    leaguesId        Int?
 }
 
 model team1MatchResult {

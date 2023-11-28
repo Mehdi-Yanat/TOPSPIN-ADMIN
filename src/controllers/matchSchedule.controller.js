@@ -4,18 +4,17 @@ const { prisma } = require("../../prisma/prisma");
 exports.addMatchSchedule = async (req, res) => {
 
     try {
-        let { date, team1, team2 } = req.body
+        let { date, team1, day, hour, team2, leagueId } = req.body
 
         const formatDate = moment(date).toISOString();
 
-        delete req.body.date
-        delete req.body.team1MatchResultId
-        delete req.body.team2MatchResultId
-        delete req.body.team1Result
-        delete req.body.team2Result
-
         await prisma.matchSchedule.create({
             data: {
+                leagues: {
+                    connect: {
+                        id: parseInt(leagueId)
+                    }
+                },
                 date: formatDate,
                 team1MatchResult: {
                     create: {
@@ -29,8 +28,11 @@ exports.addMatchSchedule = async (req, res) => {
                         team: team2
                     }
                 },
-                ...req.body
-            }
+                team1,
+                team2,
+                day,
+                hour
+            },
         })
 
         return res.status(201).json({
@@ -50,23 +52,20 @@ exports.addMatchSchedule = async (req, res) => {
 exports.editMatchSchedule = async (req, res) => {
     try {
 
-        let { date, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
+        let { date, day, team1,
+            team2,
+            hour, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
         const { id } = req.params
 
         const formatDate = moment(date).toISOString();
 
-        delete req.body.date
+
 
         const isScheduleFound = await prisma.matchSchedule.findUnique({
             where: {
                 id
             }
         })
-
-        delete req.body.team1MatchResultId
-        delete req.body.team2MatchResultId
-        delete req.body.team1Result
-        delete req.body.team2Result
 
         if (!isScheduleFound) {
             throw new Error('Schedule not found!')
@@ -78,6 +77,10 @@ exports.editMatchSchedule = async (req, res) => {
             },
             data: {
                 date: formatDate,
+                day,
+                team1,
+                team2,
+                hour,
                 team1MatchResult: {
                     update: {
                         where: {
@@ -96,7 +99,6 @@ exports.editMatchSchedule = async (req, res) => {
                         }
                     }
                 },
-                ...req.body
             }
         })
 

@@ -35,10 +35,11 @@ const validateEditAdmin = validate([
 
 const validateSchedule = validate([
     body('date').isDate(),
-    body('day').isLength({ min: 4 }),
+    body('day').isLength({ min: 2 }),
     body('hour').isLength({ max: 6 }),
     body('team1').isLength({ min: 1 }),
-    body('team2').isLength({ min: 1 })
+    body('team2').isLength({ min: 1 }),
+    body('leagueId'),
 ])
 
 const validateAddPlayOffTable = validate([
@@ -51,10 +52,19 @@ const validateAddPlayOffRow = validate([
     body('result').isFloat(),
 ])
 
+const validateAddLeagues = validate([
+    body('leagueName').isLength({ min: 4 }),
+])
+
 const validateScheduleParams = validate([
     param('id').isInt().toInt(),
 ])
 
+const validateLeagues = validate([
+    param('id').isInt().toInt(),
+])
 
 
-module.exports = { validateSchedule, validateScheduleParams, validateAddAdmin, validateEditAdmin, validateAddPlayOffTable , validateAddPlayOffRow }
+module.exports = { validateSchedule, validateScheduleParams, 
+    validateAddAdmin, validateEditAdmin, validateAddPlayOffTable , validateAddPlayOffRow , 
+    validateAddLeagues, validateLeagues }

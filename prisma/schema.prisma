@@ -40,6 +40,7 @@ model leagues {
     matchSchedule        matchSchedule[]
     classificationPoints classificationPoints[]
     playersGroup         playersGroup[]
+    results              results[]
 }
 
 // Takim listeleri
@@ -127,3 +128,62 @@ model playoffTable {
 }
 
 // SONUÇLARI
+
+model results {
+    id             Int       @id @default(autoincrement())
+    identifierName String
+    date           DateTime
+    matches        matches[]
+    leagues        leagues?  @relation(fields: [leaguesId], references: [id])
+    leaguesId      Int?
+}
+
+model matches {
+    id        Int      @id @default(autoincrement())
+    hour      String
+    matchCode String
+    team1     team1[]
+    results   results? @relation(fields: [resultsId], references: [id])
+    resultsId Int?
+    team2     team2[]
+}
+
+model team1 {
+    id         Int      @id @default(autoincrement())
+    teamCode   String
+    teamName   String
+    set1       Int
+    set2       Int
+    set3       Int
+    matchScore Int
+    matchPoint Int
+    teamPoint  Int
+    players    player[]
+    matches    matches? @relation(fields: [matchesId], references: [id])
+    matchesId  Int?
+}
+
+model team2 {
+    id         Int      @id @default(autoincrement())
+    teamCode   String
+    teamName   String
+    set1       Int
+    set2       Int
+    set3       Int
+    matchScore Int
+    matchPoint Int
+    teamPoint  Int
+    players    player[]
+    matches    matches? @relation(fields: [matchesId], references: [id])
+    matchesId  Int?
+}
+
+model player {
+    id         Int    @id @default(autoincrement())
+    playerName String
+    categorie  String
+    team1      team1? @relation(fields: [team1Id], references: [id])
+    team1Id    Int?
+    team2      team2? @relation(fields: [team2Id], references: [id])
+    team2Id    Int?
+}

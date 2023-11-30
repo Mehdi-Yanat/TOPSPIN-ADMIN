@@ -11,12 +11,14 @@ app.use(cors());
 const authRouter = require("./src/routers/auth.router");
 const scheduleRouter = require("./src/routers/matchSchedule.router.js");
 const leaguesRouter = require("./src/routers/leagues.router.js");
+const resultsRouter = require("./src/routers/results.router.js");
 
 const { prisma } = require("./prisma/prisma.js");
 
 app.use("/auth", authRouter);
 app.use('/schedule', scheduleRouter)
 app.use('/leagues', leaguesRouter)
+app.use('/results', resultsRouter)
 
 const bcrypt = require("bcrypt");
 

@@ -52,9 +52,7 @@ exports.addMatchSchedule = async (req, res) => {
 exports.editMatchSchedule = async (req, res) => {
     try {
 
-        let { date, day, team1,
-            team2,
-            hour, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
+        let { date, day, team1, team2, hour, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
         const { id } = req.params
 
         const formatDate = moment(date).toISOString();

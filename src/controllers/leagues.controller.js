@@ -139,14 +139,55 @@ exports.getOneLeagues = async (req, res) => {
                         id: true,
                         date: true,
                         hour: true,
-                        day:true,
+                        day: true,
                         team1: true,
                         team2: true,
                         team1MatchResult: true,
                         team2MatchResult: true,
                     }
                 },
-                classificationPoints: true
+                classificationPoints: true,
+                results: {
+                    select: {
+                        id: true,
+                        identifierName: true,
+                        date: true,
+                        matches: {
+                            select: {
+                                id: true,
+                                hour: true,
+                                matchCode: true,
+                                team1: {
+                                    select: {
+                                        id: true,
+                                        teamCode: true,
+                                        teamName: true,
+                                        set1: true,
+                                        set2: true,
+                                        set3: true,
+                                        matchPoint: true,
+                                        matchScore: true,
+                                        players: true
+                                    }
+                                },
+                                team2: {
+                                    select: {
+                                        id: true,
+                                        teamCode: true,
+                                        teamName: true,
+                                        set1: true,
+                                        set2: true,
+                                        set3: true,
+                                        matchPoint: true,
+                                        matchScore: true,
+                                        players: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         })
 

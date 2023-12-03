@@ -82,32 +82,17 @@ model classificationPointsTable {
 
 // MAÇ PROGRAMI
 model matchSchedule {
-    id               Int                @id @default(autoincrement())
+    id               Int       @id @default(autoincrement())
     date             DateTime
     day              String
     hour             String
     team1            String
     team2            String
-    team1MatchResult team1MatchResult[]
-    team2MatchResult team2MatchResult[]
-    leagues          leagues?           @relation(fields: [leaguesId], references: [id])
+    team1MatchResult Int?
+    team2MatchResult Int?
+    results          results[]
+    leagues          leagues?  @relation(fields: [leaguesId], references: [id])
     leaguesId        Int?
-}
-
-model team1MatchResult {
-    id              Int            @id @default(autoincrement())
-    team            String
-    result          Int
-    matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
-    matchScheduleId Int?
-}
-
-model team2MatchResult {
-    id              Int            @id @default(autoincrement())
-    team            String
-    result          Int
-    matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
-    matchScheduleId Int?
 }
 
 // A PLAY OFF
@@ -130,12 +115,14 @@ model playoffTable {
 // SONUÇLARI
 
 model results {
-    id             Int       @id @default(autoincrement())
-    identifierName String
-    date           DateTime
-    matches        matches[]
-    leagues        leagues?  @relation(fields: [leaguesId], references: [id])
-    leaguesId      Int?
+    id              Int            @id @default(autoincrement())
+    identifierName  String
+    date            DateTime
+    matches         matches[]
+    leagues         leagues?       @relation(fields: [leaguesId], references: [id])
+    leaguesId       Int?
+    matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
+    matchScheduleId Int?
 }
 
 model matches {

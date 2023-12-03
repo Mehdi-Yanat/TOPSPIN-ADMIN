@@ -120,13 +120,12 @@ exports.getAllLeagues = async (req, res) => {
     }
 }
 
-
 exports.getOneLeagues = async (req, res) => {
     try {
 
         const { id } = req.params
 
-        const leagues = await prisma.leagues.findUnique({
+        let leagues = await prisma.leagues.findUnique({
             where: {
                 id: parseInt(id)
             },
@@ -144,6 +143,24 @@ exports.getOneLeagues = async (req, res) => {
                         team2: true,
                         team1MatchResult: true,
                         team2MatchResult: true,
+                        results: {
+                            select: {
+                                matches: {
+                                    select: {
+                                        team1: {
+                                            select: {
+                                                matchPoint: true,
+                                            }
+                                        },
+                                        team2: {
+                                            select: {
+                                                matchPoint: true,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
                     }
                 },
                 classificationPoints: true,
@@ -191,10 +208,38 @@ exports.getOneLeagues = async (req, res) => {
             }
         })
 
+        leagues.matchSchedule?.forEach(async (matchSchedule) => {
+            let team1MatchResult = 0;
+            let team2MatchResult = 0;
+
+            matchSchedule.results?.forEach((result) => {
+                result.matches?.forEach((match) => {
+                    match.team1?.forEach((team1) => {
+                        team1MatchResult += team1.matchPoint || 0;
+                    });
+
+                    match.team2?.forEach((team2) => {
+                        team2MatchResult += team2.matchPoint || 0;
+                    });
+                });
+            });
+
+            await prisma.matchSchedule.update({
+                where: {
+                    id: matchSchedule.id
+                },
+                data: {
+                    team1MatchResult,
+                    team2MatchResult
+                }
+            });
+        });
+
+
         return res.status(201).json({
             success: true,
             message: '',
-            leagues
+            leagues,
         })
 
     } catch (error) {

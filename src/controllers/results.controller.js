@@ -95,24 +95,115 @@ exports.deleteResultsTable = async (req, res) => {
 exports.addResultsMatchTableRow = async (req, res) => {
     try {
 
-        const { id } = req.params
-        const { team, result } = req.body
+        const { hour, matchCode, team1Name, team1Code, team2Name, team2Code, team1, team2, set1, set2, set3, resultId } = req.body
 
-        await prisma.playoffTable.create({
+        let team1Point = 0
+        let team2Point = 0
+
+        let team1Scores = 0
+        let team2Scores = 0
+
+        if (parseInt(set1.team1) > parseInt(set1.team2)) {
+            team1Scores++
+        } else {
+            team2Scores++
+        }
+
+        if (parseInt(set2.team1) > parseInt(set2.team2)) {
+            team1Scores++
+        } else {
+            team2Scores++
+        }
+
+        if (parseInt(set3.team1) > parseInt(set3.team2)) {
+            team1Scores++
+        } else {
+            team2Scores++
+        }
+
+        if (team1Scores > team2Scores) {
+            team1Point = 1
+        } else {
+            team2Point = 1
+        }
+
+
+        await prisma.matches.create({
             data: {
-                team,
-                result: parseFloat(result),
-                playoff: {
+                results: {
                     connect: {
-                        id: parseInt(id)
+                        id: parseInt(resultId)
                     }
-                }
+                },
+                hour,
+                matchCode,
+                team1: {
+                    create: {
+                        teamName: team1Name,
+                        teamCode: team1Code,
+                        set1: parseInt(set1.team1),
+                        set2: parseInt(set2.team1),
+                        set3: parseInt(set3.team1),
+                        players: {
+                            createMany: {
+                                data: team1
+                            }
+                        },
+                        matchScore: team1Scores,
+                        matchPoint: team1Point,
+                        teamPoint: 0
+                    }
+                },
+                team2: {
+                    create: {
+                        teamName: team2Name,
+                        teamCode: team2Code,
+                        set1: parseInt(set1.team2),
+                        set2: parseInt(set2.team2),
+                        set3: parseInt(set3.team2),
+                        players: {
+                            createMany: {
+                                data: team2
+                            }
+                        },
+                        matchScore: team2Scores,
+                        matchPoint: team2Point,
+                        teamPoint: 0
+                    }
+                },
+
             }
         })
 
         return res.status(201).json({
             success: true,
-            message: 'Playoff table row was created successfully!',
+            message: 'Results row was created successfully!',
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+exports.deleteResultsMatchTableRow = async (req, res) => {
+    try {
+
+        const { id } = req.params
+
+
+        await prisma.matches.delete({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: 'Result row was deleted successfully!',
         })
 
     } catch (error) {

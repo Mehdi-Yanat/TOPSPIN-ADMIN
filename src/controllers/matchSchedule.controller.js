@@ -16,22 +16,23 @@ exports.addMatchSchedule = async (req, res) => {
                     }
                 },
                 date: formatDate,
-                team1MatchResult: {
-                    create: {
-                        result: 0,
-                        team: team1
-                    }
-                },
-                team2MatchResult: {
-                    create: {
-                        result: 0,
-                        team: team2
-                    }
-                },
+                team1MatchResult: 0,
+                team2MatchResult: 0,
                 team1,
                 team2,
                 day,
-                hour
+                hour,
+                results: {
+                    create: {
+                        date: formatDate,
+                        identifierName: `${team1} - ${team2}`,
+                        leagues: {
+                            connect: {
+                                id: parseInt(leagueId)
+                            }
+                        }
+                    }
+                }
             },
         })
 
@@ -52,16 +53,22 @@ exports.addMatchSchedule = async (req, res) => {
 exports.editMatchSchedule = async (req, res) => {
     try {
 
-        let { date, day, team1, team2, hour, team1MatchResultId, team2MatchResultId, team1Result, team2Result } = req.body
+        let { date, day, team1, team2, hour, team1Result, team2Result } = req.body
         const { id } = req.params
 
         const formatDate = moment(date).toISOString();
 
-
-
         const isScheduleFound = await prisma.matchSchedule.findUnique({
             where: {
                 id
+            },
+            select: {
+                id: true,
+                results: {
+                    select: {
+                        id: true,
+                    }
+                }
             }
         })
 
@@ -79,24 +86,19 @@ exports.editMatchSchedule = async (req, res) => {
                 team1,
                 team2,
                 hour,
-                team1MatchResult: {
+                team1MatchResult: parseInt(team1Result) || 0,
+                team2MatchResult: parseInt(team2Result) || 0,
+                results: {
                     update: {
                         where: {
-                            id: team1MatchResultId
-                        }, data: {
-                            result: parseInt(team1Result) || 0
+                            id: isScheduleFound.results[0].id
+                        },
+                        data: {
+                            date: formatDate,
+                            identifierName: `${team1} - ${team2}`
                         }
                     }
-                },
-                team2MatchResult: {
-                    update: {
-                        where: {
-                            id: team2MatchResultId
-                        }, data: {
-                            result: parseInt(team2Result) || 0
-                        }
-                    }
-                },
+                }
             }
         })
 
@@ -134,6 +136,12 @@ exports.deleteMatchSchedule = async (req, res) => {
         await prisma.matchSchedule.delete({
             where: {
                 id
+            },
+        })
+
+        await prisma.results.delete({
+            where: {
+                id: isScheduleFound.id
             }
         })
 

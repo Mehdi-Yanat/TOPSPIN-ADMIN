@@ -8,10 +8,12 @@ const validate = require("../utils/functions.js");
 
 
 router.post('/', validate.validateResults, isAuth, resultsController.addResults)
+router.post('/match', validate.validateResultsMatch, isAuth, resultsController.addResultsMatchTableRow)
 
 router.put('/:id', validate.validateResultParams, validate.validateResults, isAuth, resultsController.editResults)
 
 router.delete('/:id', validate.validateResultParams, isAuth, resultsController.deleteResultsTable)
+router.delete('/match/:id', validate.validateResultParams, isAuth, resultsController.deleteResultsMatchTableRow)
 
 
 

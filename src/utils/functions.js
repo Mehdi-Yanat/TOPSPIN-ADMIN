@@ -97,7 +97,7 @@ const validateLeagues = validate([
 ])
 
 const validateResultsMatch = validate([
-    body('hour').isLength({ min: 4 }),
+    body('hour').isLength({ min: 4 }).withMessage('Wrong Hour format'),
     body('matchCode').isLength({ min: 1 }).withMessage('Match code is required'),
     body('team1Name').isLength({ min: 1 }).withMessage('Team Name is required'),
     body('team1Code').isLength({ min: 1 }).withMessage('Team Code is required'),

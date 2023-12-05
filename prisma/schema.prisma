@@ -37,20 +37,28 @@ model verification_codes {
 model leagues {
     id                   Int                    @id @default(autoincrement())
     leagueName           String
+    leaguesGroups        leaguesGroups[]
+}
+
+model leaguesGroups {
+    id                   Int                    @id @default(autoincrement())
+    groupIdentifier            String
     matchSchedule        matchSchedule[]
     classificationPoints classificationPoints[]
     playersGroup         playersGroup[]
     results              results[]
+    leagues              leagues?               @relation(fields: [leaguesId], references: [id])
+    leaguesId            Int?
 }
 
 // Takim listeleri
 
 model playersGroup {
-    id              Int       @id @default(autoincrement())
+    id              Int            @id @default(autoincrement())
     identifierGroup String
     players         players[]
-    leagues         leagues?  @relation(fields: [leaguesId], references: [id])
-    leaguesId       Int?
+    leaguesGroups   leaguesGroups? @relation(fields: [leaguesGroupsId], references: [id])
+    leaguesGroupsId Int?
 }
 
 model players {
@@ -66,8 +74,8 @@ model classificationPoints {
     id                        Int                         @id @default(autoincrement())
     identifierName            String
     classificationPointsTable classificationPointsTable[]
-    leagues                   leagues?                    @relation(fields: [leaguesId], references: [id])
-    leaguesId                 Int?
+    leaguesGroups             leaguesGroups?              @relation(fields: [leaguesGroupsId], references: [id])
+    leaguesGroupsId           Int?
 }
 
 model classificationPointsTable {
@@ -82,7 +90,7 @@ model classificationPointsTable {
 
 // MAÇ PROGRAMI
 model matchSchedule {
-    id               Int       @id @default(autoincrement())
+    id               Int            @id @default(autoincrement())
     date             DateTime
     day              String
     hour             String
@@ -91,8 +99,8 @@ model matchSchedule {
     team1MatchResult Int?
     team2MatchResult Int?
     results          results[]
-    leagues          leagues?  @relation(fields: [leaguesId], references: [id])
-    leaguesId        Int?
+    leaguesGroups    leaguesGroups? @relation(fields: [leaguesGroupsId], references: [id])
+    leaguesGroupsId  Int?
 }
 
 // A PLAY OFF
@@ -119,10 +127,11 @@ model results {
     identifierName  String
     date            DateTime
     matches         matches[]
-    leagues         leagues?       @relation(fields: [leaguesId], references: [id])
-    leaguesId       Int?
+
     matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
     matchScheduleId Int?
+    leaguesGroups   leaguesGroups? @relation(fields: [leaguesGroupsId], references: [id])
+    leaguesGroupsId Int?
 }
 
 model matches {

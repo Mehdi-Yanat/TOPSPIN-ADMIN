@@ -3,11 +3,16 @@ const { prisma } = require("../../prisma/prisma");
 exports.addLeagues = async (req, res) => {
 
     try {
-        let { leagueName } = req.body
+        let { leagueName, leaguesGroups } = req.body
 
         await prisma.leagues.create({
             data: {
-                leagueName
+                leagueName,
+                leaguesGroups: {
+                    createMany: {
+                        data: leaguesGroups
+                    }
+                }
             }
         })
 
@@ -29,7 +34,7 @@ exports.editLeagues = async (req, res) => {
     try {
 
         const { id } = req.params
-        const { leagueName } = req.body
+        const { leagueName, leaguesGroups } = req.body
 
         const isLeague = await prisma.leagues.findUnique({
             where: {
@@ -46,9 +51,42 @@ exports.editLeagues = async (req, res) => {
                 id: isLeague.id
             },
             data: {
-                leagueName
+                leagueName,
+                leaguesGroups: {
+                    upsert: leaguesGroups.map(group => ({
+                        where: group.id ? { id: group.id } : { id: -1 },
+                        update: {
+                            groupIdentifier: group.groupIdentifier
+                        },
+                        create: {
+                            groupIdentifier: group.groupIdentifier
+                        },
+                    }))
+                }
             }
         })
+
+        const leaguesGroupsData = await prisma.leaguesGroups.findMany({
+            where: {
+                leaguesId: parseInt(id)
+            },
+            select: {
+                groupIdentifier: true
+            }
+        })
+
+        const filterLeaguesGroupData = leaguesGroupsData.map(el => el.groupIdentifier)
+        const goupsToRemove = filterLeaguesGroupData.filter(groupData => !leaguesGroups.some(group => group.groupIdentifier === groupData));
+
+
+        await prisma.leaguesGroups.deleteMany({
+            where: {
+                groupIdentifier: {
+                    in: goupsToRemove
+                }
+            }
+        });
+
 
         return res.status(201).json({
             success: true,
@@ -103,7 +141,13 @@ exports.deleteLeagues = async (req, res) => {
 exports.getAllLeagues = async (req, res) => {
     try {
 
-        const leagues = await prisma.leagues.findMany()
+        const leagues = await prisma.leagues.findMany({
+            select: {
+                id: true,
+                leagueName: true,
+                leaguesGroups: true
+            }
+        })
 
         return res.status(201).json({
             success: true,
@@ -123,7 +167,8 @@ exports.getAllLeagues = async (req, res) => {
 exports.getOneLeagues = async (req, res) => {
     try {
 
-        const { id } = req.params
+        const { id, groupId } = req.params
+
 
         let leagues = await prisma.leagues.findUnique({
             where: {
@@ -131,109 +176,149 @@ exports.getOneLeagues = async (req, res) => {
             },
             select: {
                 id: true,
-                leagueName: true,
-                playersGroup: true,
-                matchSchedule: {
+                leaguesGroups: {
                     select: {
                         id: true,
-                        date: true,
-                        hour: true,
-                        day: true,
-                        team1: true,
-                        team2: true,
-                        team1MatchResult: true,
-                        team2MatchResult: true,
+                        groupIdentifier: true,
+                        playersGroup: true,
+                        matchSchedule: {
+                            select: {
+                                id: true,
+                                date: true,
+                                hour: true,
+                                day: true,
+                                team1: true,
+                                team2: true,
+                                team1MatchResult: true,
+                                team2MatchResult: true,
+                                results: {
+                                    select: {
+                                        matches: {
+                                            select: {
+                                                team1: {
+                                                    select: {
+                                                        matchPoint: true,
+                                                    }
+                                                },
+                                                team2: {
+                                                    select: {
+                                                        matchPoint: true,
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                            }
+                        },
+                        classificationPoints: true,
                         results: {
                             select: {
+                                id: true,
+                                identifierName: true,
+                                date: true,
                                 matches: {
                                     select: {
+                                        id: true,
+                                        hour: true,
+                                        matchCode: true,
                                         team1: {
                                             select: {
+                                                id: true,
+                                                teamCode: true,
+                                                teamName: true,
+                                                set1: true,
+                                                set2: true,
+                                                set3: true,
                                                 matchPoint: true,
+                                                matchScore: true,
+                                                players: true
                                             }
                                         },
                                         team2: {
                                             select: {
+                                                id: true,
+                                                teamCode: true,
+                                                teamName: true,
+                                                set1: true,
+                                                set2: true,
+                                                set3: true,
                                                 matchPoint: true,
+                                                matchScore: true,
+                                                players: true
                                             }
                                         }
                                     }
                                 }
                             }
-                        },
-                    }
-                },
-                classificationPoints: true,
-                results: {
-                    select: {
-                        id: true,
-                        identifierName: true,
-                        date: true,
-                        matches: {
-                            select: {
-                                id: true,
-                                hour: true,
-                                matchCode: true,
-                                team1: {
-                                    select: {
-                                        id: true,
-                                        teamCode: true,
-                                        teamName: true,
-                                        set1: true,
-                                        set2: true,
-                                        set3: true,
-                                        matchPoint: true,
-                                        matchScore: true,
-                                        players: true
-                                    }
-                                },
-                                team2: {
-                                    select: {
-                                        id: true,
-                                        teamCode: true,
-                                        teamName: true,
-                                        set1: true,
-                                        set2: true,
-                                        set3: true,
-                                        matchPoint: true,
-                                        matchScore: true,
-                                        players: true
-                                    }
-                                }
-                            }
                         }
+
                     }
                 }
-
             }
         })
 
-        leagues.matchSchedule?.forEach(async (matchSchedule) => {
-            let team1MatchResult = 0;
-            let team2MatchResult = 0;
 
-            matchSchedule.results?.forEach((result) => {
-                result.matches?.forEach((match) => {
-                    match.team1?.forEach((team1) => {
-                        team1MatchResult += team1.matchPoint || 0;
-                    });
+        if (leagues) {
+            const groups = await prisma.leaguesGroups.findUnique({
+                where: {
+                    id: parseInt(groupId)
+                },
+                select: {
+                    matchSchedule: {
+                        select: {
+                            id: true,
+                            results: {
+                                select: {
+                                    matches: {
+                                        select: {
+                                            team1: {
+                                                select: {
+                                                    matchPoint: true,
+                                                }
+                                            },
+                                            team2: {
+                                                select: {
+                                                    matchPoint: true,
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        }
+                    },
+                }
+            })
 
-                    match.team2?.forEach((team2) => {
-                        team2MatchResult += team2.matchPoint || 0;
+            groups?.matchSchedule?.forEach(async (matchSchedule) => {
+                let team1MatchResult = 0;
+                let team2MatchResult = 0;
+
+                matchSchedule.results?.forEach((result) => {
+                    result.matches?.forEach((match) => {
+                        match.team1?.forEach((team1) => {
+                            team1MatchResult += team1.matchPoint || 0;
+                        });
+
+                        match.team2?.forEach((team2) => {
+                            team2MatchResult += team2.matchPoint || 0;
+                        });
                     });
                 });
-            });
 
-            await prisma.matchSchedule.update({
-                where: {
-                    id: matchSchedule.id
-                },
-                data: {
-                    team1MatchResult,
-                    team2MatchResult
-                }
+                await prisma.matchSchedule.update({
+                    where: {
+                        id: matchSchedule.id
+                    },
+                    data: {
+                        team1MatchResult,
+                        team2MatchResult
+                    }
+                });
             });
-        });
+        }
+
 
 
         return res.status(201).json({

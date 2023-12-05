@@ -4,16 +4,18 @@ const { prisma } = require("../../prisma/prisma");
 exports.addMatchSchedule = async (req, res) => {
 
     try {
-        let { date, team1, day, hour, team2, leagueId } = req.body
+        let { date, team1, day, hour, team2, leagueGroupId } = req.body
+
 
         const formatDate = moment(date).toISOString();
 
         await prisma.matchSchedule.create({
             data: {
-                leagues: {
+                leaguesGroups: {
                     connect: {
-                        id: parseInt(leagueId)
-                    }
+                        id: parseInt(leagueGroupId),
+                    },
+                    
                 },
                 date: formatDate,
                 team1MatchResult: 0,
@@ -26,9 +28,9 @@ exports.addMatchSchedule = async (req, res) => {
                     create: {
                         date: formatDate,
                         identifierName: `${team1} - ${team2}`,
-                        leagues: {
+                        leaguesGroups: {
                             connect: {
-                                id: parseInt(leagueId)
+                                id: parseInt(leagueGroupId)
                             }
                         }
                     }

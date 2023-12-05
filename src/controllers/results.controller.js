@@ -5,7 +5,8 @@ const { prisma } = require("../../prisma/prisma");
 exports.addResults = async (req, res) => {
 
     try {
-        let { date, identifierName, leagueId } = req.body
+        let { date, identifierName, leagueGroupId } = req.body
+
 
         const formatDate = moment(date).toISOString();
 
@@ -13,9 +14,9 @@ exports.addResults = async (req, res) => {
             data: {
                 identifierName,
                 date: formatDate,
-                leagues: {
+                leaguesGroups: {
                     connect: {
-                        id: parseInt(leagueId)
+                        id: parseInt(leagueGroupId)
                     }
                 }
             },
@@ -42,6 +43,10 @@ exports.editResults = async (req, res) => {
         let { date, identifierName, } = req.body
 
         const formatDate = moment(date).toISOString();
+
+        console.log('====================================');
+        console.log(id);
+        console.log('====================================');
 
         await prisma.results.update({
             where: {

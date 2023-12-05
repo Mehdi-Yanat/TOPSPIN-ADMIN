@@ -39,13 +39,13 @@ const validateSchedule = validate([
     body('hour').isLength({ max: 6 }),
     body('team1').isLength({ min: 1 }),
     body('team2').isLength({ min: 1 }),
-    body('leagueId'),
+    body('leagueGroupId'),
 ])
 
 const validateResults = validate([
     body('identifierName').isLength({ min: 4 }),
     body('date').isDate(),
-    body('leagueId'),
+    body('leagueGroupId'),
 ])
 
 const validateResultsMatches = validate([
@@ -82,6 +82,7 @@ const validateAddPlayOffRow = validate([
 
 const validateAddLeagues = validate([
     body('leagueName').isLength({ min: 4 }),
+    body('leaguesGroups').isArray()
 ])
 
 const validateScheduleParams = validate([

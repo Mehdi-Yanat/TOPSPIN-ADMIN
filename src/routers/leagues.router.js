@@ -15,7 +15,7 @@ router.delete('/:id', validate.validateLeagues, isAuth, leaguesController.delete
 
 router.get('/', leaguesController.getAllLeagues)
 
-router.get('/:id', validate.validateLeagues, leaguesController.getOneLeagues)
+router.get('/:id/group/:groupId', validate.validateLeagues, leaguesController.getOneLeagues)
 
 
 

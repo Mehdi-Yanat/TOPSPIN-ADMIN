@@ -44,9 +44,6 @@ exports.editResults = async (req, res) => {
 
         const formatDate = moment(date).toISOString();
 
-        console.log('====================================');
-        console.log(id);
-        console.log('====================================');
 
         await prisma.results.update({
             where: {

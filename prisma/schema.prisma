@@ -35,14 +35,14 @@ model verification_codes {
 
 // League 
 model leagues {
-    id                   Int                    @id @default(autoincrement())
-    leagueName           String
-    leaguesGroups        leaguesGroups[]
+    id            Int             @id @default(autoincrement())
+    leagueName    String
+    leaguesGroups leaguesGroups[]
 }
 
 model leaguesGroups {
     id                   Int                    @id @default(autoincrement())
-    groupIdentifier            String
+    groupIdentifier      String
     matchSchedule        matchSchedule[]
     classificationPoints classificationPoints[]
     playersGroup         playersGroup[]
@@ -56,6 +56,7 @@ model leaguesGroups {
 model playersGroup {
     id              Int            @id @default(autoincrement())
     identifierGroup String
+    groupCode       String
     players         players[]
     leaguesGroups   leaguesGroups? @relation(fields: [leaguesGroupsId], references: [id])
     leaguesGroupsId Int?
@@ -123,10 +124,10 @@ model playoffTable {
 // SONUÇLARI
 
 model results {
-    id              Int            @id @default(autoincrement())
-    identifierName  String
-    date            DateTime
-    matches         matches[]
+    id             Int       @id @default(autoincrement())
+    identifierName String
+    date           DateTime
+    matches        matches[]
 
     matchSchedule   matchSchedule? @relation(fields: [matchScheduleId], references: [id])
     matchScheduleId Int?
@@ -182,4 +183,22 @@ model player {
     team1Id    Int?
     team2      team2? @relation(fields: [team2Id], references: [id])
     team2Id    Int?
+}
+
+// Popup
+
+model popup {
+    id            Int         @id @default(autoincrement())
+    popupImage    String
+    headerEnglish String
+    headerTurkish String
+    text          popupText[]
+}
+
+model popupText {
+    id                 Int    @id @default(autoincrement())
+    englishTranslation String
+    turkishTranslation String
+    popup              popup? @relation(fields: [popupId], references: [id])
+    popupId            Int?
 }

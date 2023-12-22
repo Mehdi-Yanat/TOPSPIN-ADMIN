@@ -97,6 +97,11 @@ const validateLeagues = validate([
     param('id').isInt().toInt(),
 ])
 
+
+const validateGroupsParams = validate([
+    param('id').isInt().toInt(),
+])
+
 const validateResultsMatch = validate([
     body('hour').isLength({ min: 4 }).withMessage('Wrong Hour format'),
     body('matchCode').isLength({ min: 1 }).withMessage('Match code is required'),
@@ -127,5 +132,5 @@ module.exports = {
     validateSchedule, validateScheduleParams,
     validateAddAdmin, validateEditAdmin, validateAddPlayOffTable, validateAddPlayOffRow,
     validateAddLeagues, validateLeagues, validateResults, validateResultsMatches, validateResultsMatchesTeams,
-    validateResultsMatchesTeamsPlayers, validateResultParams, validateResultsMatch
+    validateResultsMatchesTeamsPlayers, validateResultParams, validateResultsMatch, validateGroupsParams
 }

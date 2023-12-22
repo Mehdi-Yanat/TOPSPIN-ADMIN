@@ -169,7 +169,6 @@ exports.getOneLeagues = async (req, res) => {
 
         const { id, groupId } = req.params
 
-
         let leagues = await prisma.leagues.findUnique({
             where: {
                 id: parseInt(id)
@@ -180,7 +179,13 @@ exports.getOneLeagues = async (req, res) => {
                     select: {
                         id: true,
                         groupIdentifier: true,
-                        playersGroup: true,
+                        playersGroup: {
+                            select: {
+                                id: true,
+                                identifierGroup: true,
+                                players: true
+                            }
+                        },
                         matchSchedule: {
                             select: {
                                 id: true,

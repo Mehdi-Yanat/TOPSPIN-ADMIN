@@ -8,11 +8,11 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(cors());
 
-const authRouter = require("./src/routers/auth.router");
+const authRouter = require("./src/routers/auth.router.js");
 const scheduleRouter = require("./src/routers/matchSchedule.router.js");
 const leaguesRouter = require("./src/routers/leagues.router.js");
 const resultsRouter = require("./src/routers/results.router.js");
-const groupsRouter = require("./src/routers/players.router");
+const groupsRouter = require("./src/routers/players.router.js");
 const uiRouter = require("./src/routers/ui.router.js");
 
 const { prisma } = require("./prisma/prisma.js");

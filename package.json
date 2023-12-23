@@ -2,6 +2,9 @@
   "name": "topspin-admin",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "18.18.2"
+  },
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js --ext js,json"

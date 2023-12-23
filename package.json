@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js --ext js,json"
+    "start": "node index.js",
+    "dev": "nodemon index.js --ext js,json"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",

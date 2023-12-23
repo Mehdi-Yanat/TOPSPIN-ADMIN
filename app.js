@@ -26,8 +26,8 @@ app.use('/ui', uiRouter)
 
 const bcrypt = require("bcrypt");
 
-app.listen(4500, () => {
-  console.log("API is running on port 4500");
+app.listen(process.env.PORT, () => {
+  console.log("API is running on port " + process.env.PORT);
 });
 
 const createAdmin = async () => {

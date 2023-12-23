@@ -11,7 +11,7 @@ const imageUpload = require("../middlewares/uploadImage.js");
 
 router.post('/', isAuth, excelUploadMiddleware, processExcelMiddleware, playersController.addGroups)
 
-router.delete('/:id', isAuth, imageUpload.single('image'), playersController.removeGroups)
+router.delete('/:id', isAuth, playersController.removeGroups)
 
 
 

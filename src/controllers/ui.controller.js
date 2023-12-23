@@ -1,6 +1,6 @@
 const { prisma } = require("../../prisma/prisma");
 
-exports.editPopup = async (req, res) => {
+exports.editPopup = async (req, res, cldRes) => {
     try {
         const { headerEnglish, headerTurkish, text } = req.body;
         const fileName = req.file ? req.file.originalname : null;
@@ -57,7 +57,7 @@ exports.editPopup = async (req, res) => {
                         },
                     })),
                 },
-                popupImage: fileName ? fileName : popup.popupImage
+                popupImage: cldRes ? cldRes.url : popup.popupImage
             },
         });
 

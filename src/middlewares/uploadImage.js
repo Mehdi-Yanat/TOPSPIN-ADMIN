@@ -1,35 +1,27 @@
-const multer = require("multer");
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 
-const storage = multer.diskStorage({
-
-    destination(req, file, cb) {
-        cb(null, 'public/images/')
-    },
-    filename(req, file, cb) {
-
-        let fileName = file.originalname
-        fileName = fileName.split(' ').join('-')
-
-        if (!file.originalname.toLowerCase().match(/\.(png|jpg|jpeg|gif)$/)) {
-            return cb(new Error('Please select a document type .png/.jpg/.jpeg/.gif'))
-        }
-
-        cb(null, `${fileName.toLocaleLowerCase()}`);
-
-    }
-})
-
-
-const upload = multer({
-    storage,
-    limits: {
-        fileSize: 200000000
-    },
-    fileFilter(req, file, cb) {
-        cb(undefined, true);
-    }
-
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
 });
 
+async function handleUpload(file) {
 
-module.exports = upload
+    const allowedFormats = ['jpg', 'jpeg', 'png', 'gif'];
+
+    const res = await cloudinary.uploader.upload(file, {
+        resource_type: "auto",
+        folder: "images",
+    });
+    return res;
+}
+
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+});
+
+module.exports = { upload, handleUpload };
